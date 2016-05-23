@@ -6,13 +6,13 @@
 
 ## Istruzioni
 
-1. Aprire una finestra di terminale (cmd o powershell su windows).
+### Aprire una finestra di terminale (cmd o powershell su windows).
 
 
-1. Clonare il repository:
+### Clonare il repository:
 ```git clone https://github.com/daserzw/IDEM-IdP-Course.git```
 
-1. Istanziare la macchina virtuale con vagrant
+### Istanziare la macchina virtuale con vagrant
 (eseguire nella directory in cui si e' clonato il repository git)
 
 ```
@@ -20,7 +20,7 @@ cd IDEM-IdP-Course/vagrant
 vagrant up
 ```
 
-1. Provisioning: eseguire il playbook di Ansible
+### Provisioning: eseguire il playbook di Ansible
 (da eseguire dalla directory del repository: IDEM-IdP-Course)
 ```
 cd vagrant
@@ -30,7 +30,8 @@ cd /vagrant/ansible
 ansible-playbook playbook.yml -i hosts
 ```
 
-1. Aggiungere IdP e SP al proprio hosts file
+### Aggiungere IdP e SP al proprio hosts file
+
 *Linux/Mac Os X*
 ```
 cd /etc
