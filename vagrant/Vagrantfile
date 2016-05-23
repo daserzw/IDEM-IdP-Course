@@ -18,6 +18,9 @@ Vagrant.configure(2) do |config|
     s.inline = '[[ ! -f $1 ]] || grep -F -q "$2" $1 || sed -i "/__main__/a \\    $2" $1'
     s.args = ['/usr/bin/ansible-galaxy', "if sys.argv == ['/usr/bin/ansible-galaxy', '--help']: sys.argv.insert(1, 'info')"]
   end
+#
+# Uncomment to let vagrant call ansible and do the provisioning (unrecommended)
+#
 #  config.vm.provision :ansible_local do |ansible|
 #    ansible.sudo = true
 #    ansible.playbook = 'ansible/playbook.yml'
