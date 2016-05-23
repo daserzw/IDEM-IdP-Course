@@ -1,0 +1,38 @@
+dn: ou=people,dc=example,dc=org
+ou: people
+objectClass: organizationalUnit
+
+dn: ou=system,dc=example,dc=org
+ou: system
+objectClass: organizationalUnit
+
+dn: cn=search,ou=system,dc=example,dc=org
+objectClass: inetOrgPerson
+cn: search
+sn: Search
+givenName: Search
+userPassword: password
+
+dn: uid=mario,ou=People,dc=example,dc=org
+objectClass: inetOrgPerson
+objectClass: eduPerson
+uid: Mario
+sn: Rossi
+givenName: Mario
+cn: Mario Rossi
+mail: mario.rossi@example.org
+userPassword: mariopw
+edupersonAffiliation: staff
+edupersonAffiliation: member
+
+dn: uid=maria,ou=People,dc=example,dc=org
+objectClass: inetOrgPerson
+objectClass: eduPerson
+uid: Maria
+sn: Gialla
+givenName: Maria
+cn: Maria Gialla
+mail: maria.gialla@example.org
+userPassword: mariapw
+edupersonAffiliation: student
+edupersonAffiliation: member

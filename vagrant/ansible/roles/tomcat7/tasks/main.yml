@@ -1,0 +1,7 @@
+- name: /etc/tomcat7/server.xml with AJP, NO 8080, and no autoDeploy
+  template: src={{ tomcat_tmpls }}/server.xml dest=/etc/tomcat7/server.xml
+  notify: restart tomcat7
+  
+- name: /etc/default/tomcat7 with urandom and 1512m heap mem
+  template: src={{ tomcat_tmpls }}/tomcat7 dest=/etc/default/tomcat7
+  notify: restart tomcat7

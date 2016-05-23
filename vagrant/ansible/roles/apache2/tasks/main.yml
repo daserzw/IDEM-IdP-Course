@@ -1,0 +1,53 @@
+- name: Add apache2 user to ssl-cert group
+  user: name=apache2 groups=ssl-cert
+
+- name: Remove Default site configuration
+  file: path=/etc/apache2/sites-enabled/000-default.conf state=absent
+
+- name: Remove Index file
+  file: path=/var/www/html/index.html state=absent
+
+- name: Install IdP Virtualhost configuration
+  template: src={{ apache_tmpls }}/idp.conf dest=/etc/apache2/sites-available/{{ idp_fqdn }}.conf
+
+- name: Install SP Virtualhost configuration
+  template: src={{ apache_tmpls }}/sp.conf dest=/etc/apache2/sites-available/{{ sp_fqdn }}.conf
+
+
+- name: Dirs for IdP and SP Virtualhosts
+  file: name={{ item }} state=directory
+  with_items:
+    - /var/log/apache2/{{ idp_fqdn }}
+    - /var/log/apache2/{{ sp_fqdn }}
+    - /var/www/html/{{ sp_fqdn }}
+    - /var/www/html/{{ idp_fqdn }}
+    - /var/www/css
+
+- name: Install IdP Index file 
+  template: src={{ apache_tmpls }}/idp-index.html dest=/var/www/html/{{ idp_fqdn }}/index.html
+
+- name: Install SP Index file 
+  template: src={{ apache_tmpls }}/sp-index.html dest=/var/www/html/{{ sp_fqdn }}/index.html
+
+- name: Install Bootstrap Min CSS 
+  copy: src={{ tools }}/bootstrap.min.css dest=/var/www/css/bootstrap.min.css
+
+- name: Enable proxy_ajp and ssl modules
+  apache2_module: name={{ item }} state=present
+  with_items:
+    - proxy_ajp
+    - ssl
+
+- name: Enable IdP Virtualhost
+  command: a2ensite {{ idp_fqdn }}.conf
+  args:
+    creates: /etc/apache2/sites-enabled/{{ idp_fqdn }}.conf
+  notify: restart apache2
+
+- name: Enable SP Virtualhost
+  command: a2ensite {{ sp_fqdn }}.conf
+  args:
+    creates: /etc/apache2/sites-enabled/{{ sp_fqdn }}.conf
+  notify: restart apache2
+
+
