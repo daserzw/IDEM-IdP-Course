@@ -2,15 +2,17 @@
   shell: /usr/sbin/shib-keygen -h sp.example.org -e https://sp.example.org/shibboleth 
   args:
     creates: /etc/shibboleth/sp-key.pem
+  notify: restart shibd
 
 - name: Create metadata directory for IdP metadata
   file: name=/etc/shibboleth/metadata state=directory
     
 - name: Add IdP Metadata to Shibboleth SP
-  synchronize:
-    src: /opt/shibboleth-idp/metadata/idp-metadata.xml
+  get_url:
+    url: https://idp.example.org/idp/shibboleth
     dest: /etc/shibboleth/metadata/idp.example.org-metadata.xml
-  delegate_to: "{{ inventory_hostname }}"
+    validate_certs: no
+  when: shibd_full | match("true")
 
 - name: Add SP Metadata to Shibboleth IdP
   get_url:
@@ -18,16 +20,23 @@
     dest: /opt/shibboleth-idp/metadata/sp.example.org-metadata.xml
     validate_certs: no
   notify: restart tomcat7
-
+  
 - name: Configure SP Metadata in Shibboleth IdP
   copy:
     src: roles/shib3idp/files/metadata-providers.xml
     dest: /opt/shibboleth-idp/conf/metadata-providers.xml
   notify: restart tomcat7
-  
+  when: shibd_full | match("true")
+ 
 - name: Configure Shibboleth SP
   copy:
     src: roles/mod-shib2/files/shibboleth2.xml
     dest: /etc/shibboleth/shibboleth2.xml
+  notify: restart shibd
+  
+- name: Configure Shibboleth SP Attribute Map
+  copy:
+    src: roles/mod-shib2/files/attribute-map.xml
+    dest: /etc/shibboleth/attribute-map.xml
   notify: restart shibd
   

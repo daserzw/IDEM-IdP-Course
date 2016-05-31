@@ -11,6 +11,7 @@
   copy:
     src: roles/apache2/files/ports.conf
     dest: /etc/apache2/ports.conf
+  notify: restart apache2
 
 - name: Install IdP Virtualhost configuration
   copy:
@@ -29,6 +30,7 @@
     - /var/log/apache2/idp.example.org
     - /var/log/apache2/sp.example.org
     - /var/www/html/sp.example.org
+    - /var/www/html/sp.example.org/secure
     - /var/www/html/idp.example.org
     - /var/www/css
 
@@ -69,5 +71,4 @@
   args:
     creates: /etc/apache2/sites-enabled/sp.example.org.conf
   notify: restart apache2
-
 
