@@ -27,7 +27,6 @@
 - name: Apply Directory config ldif
   command: "ldapmodify -Y EXTERNAL -H ldapi:/// -f roles/slapd/files/directory-config.ldif"
 
-
 - name: Search Directory for eduperson schema
   shell: "ldapsearch -QLLLY EXTERNAL -H ldapi:/// -b cn=schema,cn=config  cn=*eduperson dn"
   register: eduperson_schema
@@ -43,3 +42,6 @@
 - name: Add Directory content ldif
   command: "ldapadd -Y EXTERNAL -H ldapi:/// -f roles/slapd/files/directory-content.ldif"
   when: users_in_people_ou.stdout == ""
+
+- name: Restart slapd
+  service: name=slapd state=restarted enabled=yes

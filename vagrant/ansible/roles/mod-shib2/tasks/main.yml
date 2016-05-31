@@ -38,3 +38,12 @@
     dest: /etc/shibboleth/metadata/idp.example.org-metadata.xml
     validate_certs: no
   when: shibd_full is defined
+  
+- name: Restart shibd
+  service: name=shibd state=restarted enabled=yes
+  when: shibd_full is defined
+
+- name: Restart tomcat7
+  service: name=tomcat7 state=restarted enabled=yes
+  when: shibd_full is defined
+

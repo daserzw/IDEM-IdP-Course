@@ -9,4 +9,3 @@
 
 - name: Restart Tomcat7
   service: name=tomcat7 state=restarted enabled=yes
-
