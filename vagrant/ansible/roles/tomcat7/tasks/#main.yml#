@@ -9,5 +9,3 @@
 - name: Install JSTL-1.2 library
   get_url: url=https://repo1.maven.org/maven2/jstl/jstl/1.2/jstl-1.2.jar dest=/usr/share/tomcat7/lib
 
-
-

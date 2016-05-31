@@ -1,0 +1,64 @@
+- name: Include tomcat7 handlers
+  include: roles/tomcat7/handlers/main.yml
+
+- name: Stat Shibboleth IdP tarball in /opt 
+  stat: path=/opt/shibboleth-identity-provider-3.2.1.tar.gz
+  register: shib_tarball
+
+- name: Download Shibboleth IdP
+  get_url: url={{ idp_dl_url }} dest=/opt
+  when: shib_tarball.stat.exists == False
+
+- name: Stat Shibboleth IdP source dir in /opt 
+  stat: path=/opt/shibboleth-identity-provider-3.2.1
+  register: shib_dir_source
+
+- name: Unarchive Shibboleth IdP
+  unarchive: src=/opt/shibboleth-identity-provider-3.2.1.tar.gz dest=/opt
+  when: shib_dir_source.stat.exists == False
+
+- name: Stat Shibboleth IdP dest dir in /opt
+  stat: path=/opt/shibboleth-idp
+  register: shib_dir_dest
+
+- name: Prepare properties for Shibboleth IdP install
+  template: src=roles/shib3idp/templates/shib-install.properties dest=/tmp/shib-install.properties
+
+- name: Install Shibboleth Idp
+  environment: 
+    JAVA_HOME: "{{ java_home }}"
+  command: |
+    /opt/shibboleth-identity-provider-3.2.1/bin/install.sh \
+    -Didp.sealer.password={{ idp_pw }} \
+    -Didp.keystore.password={{ idp_pw }} \
+    -Didp.scope={{ domain }} \
+    -Didp.src.dir=/opt/shibboleth-identity-provider-3.2.1 \
+    -Didp.host.name={{ idp_fqdn }} \
+    -Didp.target.dir=/opt/shibboleth-idp \
+    -Didp.merge.properties=/tmp/shib-install.properties
+  when: shib_dir_dest.stat.exists == False
+  
+- name: tomcat7 user for idp dirs
+  file: name="{{ item }}" owner=tomcat7 recurse=yes
+  with_items:
+    - "{{ idp_path }}/conf"
+    - "{{ idp_path }}/logs"
+    - "{{ idp_path }}/metadata"
+    - "{{ idp_path }}/credentials"
+  
+- name: Install the IdP WAR
+  template: src=roles/shib3idp/templates/idp.xml dest=/etc/tomcat7/Catalina/localhost/idp.xml
+  notify: restart tomcat7
+
+- name: Generate salt for persistentId generator
+  shell: openssl rand -base64 36
+  register: persId_salt
+  
+- name: Configure SAML NameID
+  template: src=roles/shib3idp/templates/saml-nameid.properties dest="{{ idp_path }}/conf/saml-nameid.properties" 
+
+- name: Configure LDAP Auth
+  copy: src=roles/shib3idp/files/ldap.properties dest="{{ idp_path }}/conf/ldap.properties" 
+    
+- name: Configure Enhanced Logging
+  copy: src=roles/shib3idp/files/logback.xml dest="{{ idp_path }}/conf/logback.xml"

@@ -24,20 +24,16 @@
 - name: Install ldap-utils
   apt: name=ldap-utils state=present
 
-- name: Search Directory for config (actually last index entry)
-  shell: "ldapsearch -QLLLY EXTERNAL -H ldapi:/// -b cn=config olcDbIndex='mail pres,eq,sub' dn"
-  register: config_index
-
 - name: Apply Directory config ldif
-  command: "ldapmodify -Y EXTERNAL -H ldapi:/// -f {{ ldifs }}/directory-config.ldif"
-  when: config_index.stdout == ""
+  command: "ldapmodify -Y EXTERNAL -H ldapi:/// -f roles/slapd/files/directory-config.ldif"
+
 
 - name: Search Directory for eduperson schema
   shell: "ldapsearch -QLLLY EXTERNAL -H ldapi:/// -b cn=schema,cn=config  cn=*eduperson dn"
   register: eduperson_schema
 
 - name: Add eduperson-201602 schema ldif
-  command: "ldapadd -Y EXTERNAL -H ldapi:/// -f {{ ldifs }}/eduperson-201602.ldif"
+  command: "ldapadd -Y EXTERNAL -H ldapi:/// -f roles/slapd/files/eduperson-201602.ldif"
   when: eduperson_schema.stdout == ""
   
 - name: Search Directory for users
@@ -45,5 +41,5 @@
   register: users_in_people_ou
 
 - name: Add Directory content ldif
-  command: "ldapadd -Y EXTERNAL -H ldapi:/// -f {{ ldifs }}/directory-content.ldif"
+  command: "ldapadd -Y EXTERNAL -H ldapi:/// -f roles/slapd/files/directory-content.ldif"
   when: users_in_people_ou.stdout == ""
