@@ -1,3 +1,0 @@
-- name: restart shibboleth
-  shell: cd {{ idp_path }}; ./bin/run
-  

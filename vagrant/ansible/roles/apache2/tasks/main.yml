@@ -11,7 +11,6 @@
   copy:
     src: roles/apache2/files/ports.conf
     dest: /etc/apache2/ports.conf
-  notify: restart apache2
 
 - name: Install IdP Virtualhost configuration
   copy:
@@ -64,11 +63,12 @@
   command: a2ensite idp.example.org.conf
   args:
     creates: /etc/apache2/sites-enabled/idp.example.org.conf
-  notify: restart apache2
 
 - name: Enable SP Virtualhost
   command: a2ensite sp.example.org.conf
   args:
     creates: /etc/apache2/sites-enabled/sp.example.org.conf
-  notify: restart apache2
+
+- name: Restart Apache2
+  service: name=apache2 state=restarted enabled=yes
 

@@ -1,6 +1,3 @@
-- name: Include tomcat7 handlers
-  include: roles/tomcat7/handlers/main.yml
-
 - name: Stat Shibboleth IdP tarball in /opt 
   stat: path=/opt/shibboleth-identity-provider-3.2.1.tar.gz
   register: shib_tarball
@@ -48,7 +45,6 @@
   
 - name: Install the IdP WAR
   template: src=roles/shib3idp/templates/idp.xml dest=/etc/tomcat7/Catalina/localhost/idp.xml
-  notify: restart tomcat7
 
 - name: Generate salt for persistentId generator
   shell: openssl rand -base64 36
@@ -62,3 +58,6 @@
     
 - name: Configure Enhanced Logging
   copy: src=roles/shib3idp/files/logback.xml dest="{{ idp_path }}/conf/logback.xml"
+
+- name: Restart Tomcat7
+  service: name=tomcat7 state=restarted
