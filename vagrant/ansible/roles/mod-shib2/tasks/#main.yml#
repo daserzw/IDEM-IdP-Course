@@ -19,18 +19,6 @@
 - name: Restart shibd
   service: name=shibd state=restarted enabled=yes
 
-- name: Add SP Metadata to Shibboleth IdP
-  get_url:
-    url: https://sp.example.org/Shibboleth.sso/Metadata
-    dest: /opt/shibboleth-idp/metadata/sp.example.org-metadata.xml
-    validate_certs: no
-
-- name: Configure SP Metadata in Shibboleth IdP
-  copy:
-    src: roles/shib3idp/files/metadata-providers.xml
-    dest: /opt/shibboleth-idp/conf/metadata-providers.xml
-  when: pre_t3 is defined
-  
 - name: Add IdP Metadata to Shibboleth SP
   get_url:
     url: https://idp.example.org/idp/shibboleth

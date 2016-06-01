@@ -12,6 +12,14 @@
   tags: online
 #  apt: update_cache=yes cache_valid_time=36000
 
+- name: Uninstall libapache2-mod-shib2
+  apt: name=libapache2-mod-shib2 state=absent purge=yes
+  when: cleanup is defined
+
+- name: Remove /etc/shibboleth dir
+  file: path=/etc/shibboleth state=absent
+  when: cleanup is defined
+
 - name: Install apt packages
   apt: name={{ item }} state=present
   with_items:
@@ -22,6 +30,7 @@
     - libjstl1.1-java
     - tomcat7 
     - libapache2-mod-shib2
+    - libapache2-mod-php5
   tags: online
 
 - name: Install CA Certificate
